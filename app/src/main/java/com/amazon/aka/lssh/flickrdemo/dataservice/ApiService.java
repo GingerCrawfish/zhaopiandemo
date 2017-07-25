@@ -1,4 +1,6 @@
-package com.amazon.aka.lssh.flickrdemo.service;
+package com.amazon.aka.lssh.flickrdemo.dataservice;
+
+import com.amazon.aka.lssh.flickrdemo.utils.HttpLogger;
 
 import java.io.IOException;
 
@@ -7,6 +9,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -22,11 +25,17 @@ public class ApiService {
     private Retrofit retrofit;
 
     private ApiService() {
+        HttpLoggingInterceptor logInterceptor = new HttpLoggingInterceptor(new HttpLogger());
+        logInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.interceptors().add(mInterceptor);
-        OkHttpClient client = builder.build();
+        OkHttpClient client = builder.addNetworkInterceptor(logInterceptor).build();
 
         RxJavaCallAdapterFactory rxJavaCallAdapterFactory = RxJavaCallAdapterFactory.create();
+
+
 
         retrofit = new Retrofit.Builder()
                     .baseUrl("https://api.flickr.com")

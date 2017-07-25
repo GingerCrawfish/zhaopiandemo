@@ -12,32 +12,32 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.amazon.aka.lssh.flickrdemo.R;
-import com.amazon.aka.lssh.flickrdemo.controller.ModelViewBridge;
+import com.amazon.aka.lssh.flickrdemo.controller.PhotoPresenterImpl;
 import com.amazon.aka.lssh.flickrdemo.model.Photo;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ModelViewBridge.ModelViewInteraction {
+public class MainActivity extends AppCompatActivity implements MainView{
 
     private EditText editText;
     private Button button;
     private RecyclerView recyclerView;
 
     private PhotoAdapter photoAdapter;
-    private ModelViewBridge modelViewBridge;
+    private PhotoPresenterImpl photoPresenterImpl;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.modelViewBridge = new ModelViewBridge(this);
+        photoPresenterImpl = new PhotoPresenterImpl(this);
 
         editText = findViewById(R.id.search_box);
         button = findViewById(R.id.search_button);
-        recyclerView = this.findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
 
-        photoAdapter = new PhotoAdapter(this);
+        photoAdapter = new PhotoAdapter(photoPresenterImpl);
         recyclerView.setAdapter(photoAdapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -46,22 +46,20 @@ public class MainActivity extends AppCompatActivity implements ModelViewBridge.M
             @Override
             public void onClick(View view) {
                 hideKeyboard(view);
-                modelViewBridge.searchImage(editText.getText().toString());
+                photoPresenterImpl.searchImage(editText.getText().toString());
             }
         });
 
     }
 
     @Override
-    public void setPhotos(List<Photo> photoList) {
-        if (photoAdapter != null) {
-            photoAdapter.setPhotos(photoList);
-        }
-    }
-
-    private void hideKeyboard(View view) {
+    public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager =(InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    @Override
+    public void setPhotos(List<Photo> photoList) {
+        photoAdapter.setPhotos(photoList);
+    }
 }

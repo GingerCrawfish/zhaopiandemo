@@ -1,17 +1,16 @@
 package com.amazon.aka.lssh.flickrdemo.view;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.amazon.aka.lssh.flickrdemo.controller.PhotoPresenter;
+import com.amazon.aka.lssh.flickrdemo.controller.PhotoPresenterImpl;
+import com.amazon.aka.lssh.flickrdemo.utils.PhotoUtils;
 import com.amazon.aka.lssh.flickrdemo.R;
 import com.amazon.aka.lssh.flickrdemo.model.Photo;
-import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -20,14 +19,13 @@ import java.util.List;
  */
 
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder> {
-    static final String flickrUrl = "https://farm%1$s.staticflickr.com/%2$s/%3$s_%4$s.jpg";
 
-    private List<Photo> photoList;
+    private List<Photo> mPhotoList;
 
-    private Activity mActivity;
+    private PhotoPresenterImpl mPhotoPresenterImpl;
 
-    public PhotoAdapter(Activity activity) {
-        this.mActivity = activity;
+    public PhotoAdapter(PhotoPresenterImpl photoPresenterImpl) {
+        this.mPhotoPresenterImpl = photoPresenterImpl;
     }
 
     @Override
@@ -40,44 +38,28 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     @Override
     public int getItemCount() {
-        if (photoList == null) {
+        if (mPhotoList == null) {
             return 0;
         }
 
-        return photoList.size();
+        return mPhotoList.size();
     }
-
-    private View.OnClickListener mClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            String url = (String) view.getTag();
-            Log.i("tag", url);
-
-            Intent intent = new Intent(mActivity, ShowActivity.class);
-            intent.putExtra("url", url);
-            mActivity.startActivity(intent);
-        }
-    };
 
     @Override
     public void onBindViewHolder(PhotoViewHolder holder, int position) {
-        if (photoList != null || position < photoList.size()) {
+        if (mPhotoList != null || position < mPhotoList.size()) {
             ImageView imageView = holder.mImageView;
-            final String url = getPhotoUrl(photoList.get(position));
 
-            Glide.with(imageView.getContext()).load(url).centerCrop().crossFade().into(imageView);
+            final String url = PhotoUtils.getPhotoUrl(mPhotoList.get(position));
+            PhotoUtils.loadPhoto(imageView, url);
 
-            imageView.setTag(url);
-            imageView.setOnClickListener(mClickListener);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mPhotoPresenterImpl.showImageInShowActivity(url);
+                }
+            });
         }
-    }
-
-    private String getPhotoUrl(Photo photo) {
-        if (photo != null) {
-            return String.format(flickrUrl, photo.getFarm(), photo.getServer(), photo.getId(), photo.getSecret());
-        }
-
-        return null;
     }
 
     public class PhotoViewHolder extends RecyclerView.ViewHolder {
@@ -91,7 +73,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     }
 
     public void setPhotos(List<Photo> photos) {
-        this.photoList = photos;
+        this.mPhotoList = photos;
         notifyDataSetChanged();
     }
 }

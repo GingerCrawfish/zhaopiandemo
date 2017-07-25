@@ -1,4 +1,4 @@
-package com.amazon.aka.lssh.flickrdemo.service;
+package com.amazon.aka.lssh.flickrdemo.dataservice;
 
 import com.amazon.aka.lssh.flickrdemo.model.PhotoContainer;
 

@@ -1,10 +1,14 @@
 package com.amazon.aka.lssh.flickrdemo.controller;
 
-import com.amazon.aka.lssh.flickrdemo.model.Photo;
-import com.amazon.aka.lssh.flickrdemo.model.PhotoContainer;
-import com.amazon.aka.lssh.flickrdemo.service.ApiService;
+import android.content.Intent;
+import android.util.Log;
+import android.view.View;
 
-import java.util.List;
+import com.amazon.aka.lssh.flickrdemo.model.PhotoContainer;
+import com.amazon.aka.lssh.flickrdemo.dataservice.ApiService;
+import com.amazon.aka.lssh.flickrdemo.view.MainActivity;
+import com.amazon.aka.lssh.flickrdemo.view.MainView;
+import com.amazon.aka.lssh.flickrdemo.view.ShowActivity;
 
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -14,13 +18,14 @@ import rx.schedulers.Schedulers;
  * Created by lssh on 7/22/17.
  */
 
-public class ModelViewBridge {
-    private ModelViewInteraction mInteraction;
+public class PhotoPresenterImpl implements PhotoPresenter {
+    private MainActivity mActivity;
 
-    public ModelViewBridge(ModelViewInteraction interaction) {
-        this.mInteraction = interaction;
+    public PhotoPresenterImpl(MainActivity mainActivity) {
+        this.mActivity = mainActivity;
     }
 
+    @Override
     public void searchImage(String keywords) {
         ApiService.getInstance().getFlickrService().searchPhotos(keywords)
                 .subscribeOn(Schedulers.io())
@@ -33,20 +38,23 @@ public class ModelViewBridge {
 
                     @Override
                     public void onError(Throwable e) {
-                        // TODO no-im
+                        e.printStackTrace();
                     }
 
                     @Override
                     public void onNext(PhotoContainer photoContainer) {
                         if (photoContainer != null && photoContainer.getPhotos() != null) {
-                            mInteraction.setPhotos(photoContainer.getPhotos().getPhotoList());
+                            mActivity.setPhotos(photoContainer.getPhotos().getPhotoList());
                         }
                     }
                 });
 
     }
 
-    public interface  ModelViewInteraction {
-        void setPhotos(List<Photo> photoList);
+    @Override
+    public void showImageInShowActivity(String url) {
+        Intent intent = new Intent(mActivity, ShowActivity.class);
+        intent.putExtra("url", url);
+        mActivity.startActivity(intent);
     }
 }
