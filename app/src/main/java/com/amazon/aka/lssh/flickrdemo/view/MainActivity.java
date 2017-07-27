@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.amazon.aka.lssh.flickrdemo.R;
-import com.amazon.aka.lssh.flickrdemo.controller.PhotoPresenterImpl;
+import com.amazon.aka.lssh.flickrdemo.presenter.PhotoPresenterImpl;
 import com.amazon.aka.lssh.flickrdemo.model.Photo;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements MainView{
         button = findViewById(R.id.search_button);
         recyclerView = findViewById(R.id.recycler_view);
 
-        photoAdapter = new PhotoAdapter(photoPresenterImpl);
+        photoAdapter = new PhotoAdapter();
         recyclerView.setAdapter(photoAdapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -61,5 +61,6 @@ public class MainActivity extends AppCompatActivity implements MainView{
     @Override
     public void setPhotos(List<Photo> photoList) {
         photoAdapter.setPhotos(photoList);
+        photoAdapter.notifyDataSetChanged();
     }
 }

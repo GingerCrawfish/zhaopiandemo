@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.amazon.aka.lssh.flickrdemo.controller.PhotoPresenter;
-import com.amazon.aka.lssh.flickrdemo.controller.PhotoPresenterImpl;
+import com.amazon.aka.lssh.flickrdemo.presenter.PhotoPresenterImpl;
+import com.amazon.aka.lssh.flickrdemo.utils.IntentUtils;
 import com.amazon.aka.lssh.flickrdemo.utils.PhotoUtils;
 import com.amazon.aka.lssh.flickrdemo.R;
 import com.amazon.aka.lssh.flickrdemo.model.Photo;
@@ -22,18 +22,10 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     private List<Photo> mPhotoList;
 
-    private PhotoPresenterImpl mPhotoPresenterImpl;
-
-    public PhotoAdapter(PhotoPresenterImpl photoPresenterImpl) {
-        this.mPhotoPresenterImpl = photoPresenterImpl;
-    }
-
     @Override
     public PhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ImageView image = (ImageView) LayoutInflater.from(parent.getContext()).inflate(R.layout.photo_item, parent,false);
-        PhotoViewHolder viewHolder = new PhotoViewHolder(image);
-
-        return viewHolder;
+        ImageView imageView = (ImageView) LayoutInflater.from(parent.getContext()).inflate(R.layout.photo_item, parent,false);
+        return new PhotoViewHolder(imageView);
     }
 
     @Override
@@ -48,32 +40,27 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     @Override
     public void onBindViewHolder(PhotoViewHolder holder, int position) {
         if (mPhotoList != null || position < mPhotoList.size()) {
-            ImageView imageView = holder.mImageView;
 
             final String url = PhotoUtils.getPhotoUrl(mPhotoList.get(position));
-            PhotoUtils.loadPhoto(imageView, url);
+            PhotoUtils.loadPhoto((ImageView) holder.itemView, url);
 
-            imageView.setOnClickListener(new View.OnClickListener() {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mPhotoPresenterImpl.showImageInShowActivity(url);
+                    view.getContext().startActivity(IntentUtils.getShowViewIntent(view.getContext(), url));
                 }
             });
         }
     }
 
+    public void setPhotos(List<Photo> photos) {
+        this.mPhotoList = photos;
+    }
+
     public class PhotoViewHolder extends RecyclerView.ViewHolder {
-        ImageView mImageView;
 
         public PhotoViewHolder(final ImageView imageView) {
             super(imageView);
-            mImageView = imageView;
         }
-
-    }
-
-    public void setPhotos(List<Photo> photos) {
-        this.mPhotoList = photos;
-        notifyDataSetChanged();
     }
 }

@@ -1,4 +1,4 @@
-package com.amazon.aka.lssh.flickrdemo.controller;
+package com.amazon.aka.lssh.flickrdemo.presenter;
 
 /**
  * Created by lssh on 7/24/17.
@@ -6,6 +6,4 @@ package com.amazon.aka.lssh.flickrdemo.controller;
 
 public interface PhotoPresenter {
     void searchImage(String keywords);
-
-    void showImageInShowActivity(String url);
 }

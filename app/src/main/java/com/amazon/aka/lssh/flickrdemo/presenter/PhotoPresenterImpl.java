@@ -1,14 +1,8 @@
-package com.amazon.aka.lssh.flickrdemo.controller;
-
-import android.content.Intent;
-import android.util.Log;
-import android.view.View;
+package com.amazon.aka.lssh.flickrdemo.presenter;
 
 import com.amazon.aka.lssh.flickrdemo.model.PhotoContainer;
 import com.amazon.aka.lssh.flickrdemo.dataservice.ApiService;
-import com.amazon.aka.lssh.flickrdemo.view.MainActivity;
 import com.amazon.aka.lssh.flickrdemo.view.MainView;
-import com.amazon.aka.lssh.flickrdemo.view.ShowActivity;
 
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -19,10 +13,10 @@ import rx.schedulers.Schedulers;
  */
 
 public class PhotoPresenterImpl implements PhotoPresenter {
-    private MainActivity mActivity;
+    private MainView mView;
 
-    public PhotoPresenterImpl(MainActivity mainActivity) {
-        this.mActivity = mainActivity;
+    public PhotoPresenterImpl(MainView mainView) {
+        this.mView = mainView;
     }
 
     @Override
@@ -44,17 +38,10 @@ public class PhotoPresenterImpl implements PhotoPresenter {
                     @Override
                     public void onNext(PhotoContainer photoContainer) {
                         if (photoContainer != null && photoContainer.getPhotos() != null) {
-                            mActivity.setPhotos(photoContainer.getPhotos().getPhotoList());
+                            mView.setPhotos(photoContainer.getPhotos().getPhotoList());
                         }
                     }
                 });
 
-    }
-
-    @Override
-    public void showImageInShowActivity(String url) {
-        Intent intent = new Intent(mActivity, ShowActivity.class);
-        intent.putExtra("url", url);
-        mActivity.startActivity(intent);
     }
 }
