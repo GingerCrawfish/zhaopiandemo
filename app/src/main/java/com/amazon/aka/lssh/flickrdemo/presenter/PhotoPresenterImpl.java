@@ -4,6 +4,7 @@ import com.amazon.aka.lssh.flickrdemo.model.PhotoContainer;
 import com.amazon.aka.lssh.flickrdemo.dataservice.ApiService;
 import com.amazon.aka.lssh.flickrdemo.view.MainView;
 
+import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -22,8 +23,6 @@ public class PhotoPresenterImpl implements PhotoPresenter {
     @Override
     public void searchImage(String keywords) {
         ApiService.getInstance().getFlickrService().searchPhotos(keywords)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<PhotoContainer>() {
                     @Override
                     public void onCompleted() {
